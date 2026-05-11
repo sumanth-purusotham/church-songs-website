@@ -19,7 +19,7 @@ export const register = async (req: Request, res: Response) => {
     return res.status(409).json({ message: 'Email is already in use' });
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 12);
   const user = await User.create({ name, email, passwordHash });
   const token = signToken({ userId: user._id.toString(), name: user.name });
 

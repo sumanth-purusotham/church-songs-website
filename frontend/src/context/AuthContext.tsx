@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(nextToken);
     setUser(nextUser);
     setApiToken(nextToken);
+    localStorage.setItem('churchSongsToken', nextToken);
     localStorage.setItem('churchSongsUser', JSON.stringify(nextUser));
   };
 

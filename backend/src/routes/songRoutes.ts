@@ -7,14 +7,15 @@ import {
   uploadSong
 } from '../controllers/songController';
 import { requireAuth } from '../middleware/auth';
+import { songsReadLimiter, songsWriteLimiter } from '../middleware/rateLimit';
 import { upload } from '../middleware/upload';
 
 const router = Router();
 
-router.get('/', getSongs);
-router.get('/:id', getSongById);
-router.post('/upload', requireAuth, upload.single('file'), uploadSong);
-router.put('/:id', requireAuth, updateSong);
-router.delete('/:id', requireAuth, deleteSong);
+router.get('/', songsReadLimiter, getSongs);
+router.get('/:id', songsReadLimiter, getSongById);
+router.post('/upload', songsWriteLimiter, requireAuth, upload.single('file'), uploadSong);
+router.put('/:id', songsWriteLimiter, requireAuth, updateSong);
+router.delete('/:id', songsWriteLimiter, requireAuth, deleteSong);
 
 export default router;
