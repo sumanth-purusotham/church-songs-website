@@ -4,8 +4,6 @@ import type { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Song } from '../models/Song';
 
-const sanitizeSearch = (search: string) => search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 export const uploadSong = async (req: Request, res: Response) => {
   const file = req.file;
   const { name, description } = req.body as { name?: string; description?: string };
@@ -38,15 +36,7 @@ export const getSongs = async (req: Request, res: Response) => {
   const limit = Math.min(50, Math.max(1, Number(req.query.limit || 10)));
   const search = (req.query.search as string | undefined)?.trim();
 
-  const filter = search
-    ? {
-        $or: [
-          { name: { $regex: sanitizeSearch(search), $options: 'i' } },
-          { description: { $regex: sanitizeSearch(search), $options: 'i' } },
-          { creatorName: { $regex: sanitizeSearch(search), $options: 'i' } }
-        ]
-      }
-    : {};
+  const filter = search ? { $text: { $search: search } } : {};
 
   const [items, total] = await Promise.all([
     Song.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
