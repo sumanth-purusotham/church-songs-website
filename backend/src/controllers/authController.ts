@@ -3,6 +3,21 @@ import type { Request, Response } from 'express';
 import { User } from '../models/User';
 import { signToken } from '../utils/jwt';
 
+const isValidEmail = (email: string) => {
+  const atIndex = email.indexOf('@');
+  const lastAtIndex = email.lastIndexOf('@');
+  if (atIndex <= 0 || atIndex !== lastAtIndex || atIndex === email.length - 1) {
+    return false;
+  }
+
+  const domain = email.slice(atIndex + 1);
+  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
+    return false;
+  }
+
+  return !email.includes(' ');
+};
+
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body as { name?: unknown; email?: unknown; password?: unknown };
 
@@ -13,7 +28,7 @@ export const register = async (req: Request, res: Response) => {
   const normalizedName = name.trim();
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+  if (!isValidEmail(normalizedEmail)) {
     return res.status(400).json({ message: 'Please provide a valid email address' });
   }
 
@@ -46,7 +61,7 @@ export const login = async (req: Request, res: Response) => {
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+  if (!isValidEmail(normalizedEmail)) {
     return res.status(400).json({ message: 'Please provide a valid email address' });
   }
 
