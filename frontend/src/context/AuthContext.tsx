@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setApiToken();
     localStorage.removeItem('churchSongsUser');
+    localStorage.removeItem('churchSongsToken');
   };
 
   return <AuthContext.Provider value={{ user, token, login, register, logout }}>{children}</AuthContext.Provider>;
